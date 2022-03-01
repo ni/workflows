@@ -54,6 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Log into registry
+        uses: redhat-actions/podman-login@v1
         with:
           username: ${{ inputs.registry_username }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
