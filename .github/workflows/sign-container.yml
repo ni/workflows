@@ -49,8 +49,6 @@ on:
 
 jobs:
   sign-container:
-    env:
-      GNUPGHOME: ${{ runner.temp }}/gpg
     runs-on: ubuntu-latest
     steps:
       - name: Log into registry
