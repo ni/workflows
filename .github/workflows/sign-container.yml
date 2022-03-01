@@ -62,13 +62,19 @@ jobs:
       - name: Create signature staging directory
         run: mkdir ${{ runner.temp }}/sigstore
       - name: Create gnupghome directory
-        run: mkdir $GNUPGHOME && chmod 700 $GNUPGHOME
+        run: mkdir ${{ runner.temp }}/gpg && chmod 700 ${{ runner.temp }}/gpg
       - name: Import public key
         run: echo "${{ secrets.GPG_PUBLIC_KEY }} | base64 --decode | gpg --import"
+        env:
+          GNUPGHOME: ${{ runner.temp }}/gpg
       - name: Import private key
         run: echo "${{ secrets.GPG_PRIVATE_KEY }} | base64 --decode | gpg --import"
+        env:
+          GNUPGHOME: ${{ runner.temp }}/gpg
       - name: Sign image
         run: podman image sign --sign-by ${{ inputs.gpg_key_id }} -d ${{ runner.temp }}/sigstore docker://${{ inputs.image_tag }}
+        env:
+          GNUPGHOME: ${{ runner.temp }}/gpg
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
