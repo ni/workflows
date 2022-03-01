@@ -1,0 +1,78 @@
+name: sign-container
+
+on:
+  workflow_call:
+    inputs:
+      gpg_key_id:
+        description: ID for the key to be used for signing
+        required: false
+        type: string
+        default: security@ni.com
+      image_tag:
+        description: Tag of image to be signed
+        required: true
+        type: string
+      registry:
+        description: The container registry to retrieve image
+        required: false
+        default: niartifacts.jfrog.io
+        type: string
+      registry_username:
+        description: User to connect to artifactory
+        required: true
+        type: string
+      signature_store_bucket:
+        description: AWS S3 bucket to hold signatures
+        required: true
+        type: string
+      signature_store_region:
+        description: AWS region for the signature store
+        required: false
+        type: string
+        default: us-east-1
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        description: Access key to use for s3 signature bucket
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        description: Secret access key to use for s3 signature bucket
+        required: true
+      GPG_PRIVATE_KEY:
+        description: Base 64 encoded gpg private key to use for signing
+        required: true
+      GPG_PUBLIC_KEY:
+        description: Base 64 encoded gpg public key to use for signing
+        required: true
+      REGISTRY_PASSWORD:
+        description: Password or token to use to pull from container registry
+        required: true      
+
+jobs:
+  sign-container:
+    env:
+      GNUPGHOME: ${{ runner.temp }}/gpg
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log into registry
+        with:
+          username: ${{ inputs.registry_username }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+          registry: ${{ inputs.registry }}
+      - name: Create signature staging directory
+        run: mkdir ${{ runner.temp }}/sigstore
+      - name: Create gnupghome directory
+        run: mkdir $GNUPGHOME && chmod 700 $GNUPGHOME
+      - name: Import public key
+        run: echo "${{ secrets.GPG_PUBLIC_KEY }} | base64 --decode | gpg --import"
+      - name: Import private key
+        run: echo "${{ secrets.GPG_PRIVATE_KEY }} | base64 --decode | gpg --import"
+      - name: Sign image
+        run: podman image sign --sign-by ${{ inputs.gpg_key_id }} -d ${{ runner.temp }}/sigstore docker://${{ inputs.image_tag }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ inputs.signature_store_region }}
+      - name: Sync signatures to S3
+        run: aws s3 sync ${{ runner.temp }}/sigstore ${{ inputs.signature_store_bucket }}
