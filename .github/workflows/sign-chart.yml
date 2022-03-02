@@ -1,4 +1,4 @@
-name: sign-container
+name: sign-chart
 
 on:
   workflow_call:
@@ -51,8 +51,8 @@ jobs:
         run: helm repo update
       - name: Download chart
         run: helm pull ${{ inputs.repository_name }}/${{ inputs.chart }} --version ${{ inputs.version }}
-      - name: Install signing plugin
-        run: helm plugin install https://github.com/neilvana/helm-gpg
+      - name: Install helm-sign
+        run: pipx install 'helm-sign==0.1.2'
       - name: Create gnupghome directory
         run: mkdir ${{ runner.temp }}/gpg && chmod 700 ${{ runner.temp }}/gpg
       - name: Import public key
@@ -64,7 +64,7 @@ jobs:
         env:
           GNUPGHOME: ${{ runner.temp }}/gpg
       - name: Sign chart
-        run: helm gpg sign ${{ inputs.chart }}-${{ inputs.version }}.tgz
+        run: helm-sign ${{ inputs.chart }}-${{ inputs.version }}.tgz
         env:
           GNUPGHOME: ${{ runner.temp }}/gpg
       - name: Publish providence file
