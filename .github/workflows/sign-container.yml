@@ -45,7 +45,7 @@ on:
         required: true
       REGISTRY_PASSWORD:
         description: Password or token to use to pull from container registry
-        required: true      
+        required: true
 
 jobs:
   sign-container:
