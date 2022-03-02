@@ -37,9 +37,6 @@ on:
       GPG_PUBLIC_KEY:
         description: Base 64 encoded gpg public key to use for signing
         required: true
-      REPOSITORY_USER:
-        description: The user to connect to the helm repository
-        required: true
       REPOSITORY_PASSWORD:
         description: The password to connect to the helm repository
         required: true
