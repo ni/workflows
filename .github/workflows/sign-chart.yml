@@ -25,7 +25,7 @@ on:
       repository_url:
         description: URL for the helm repository 
         required: false
-        default: https://niartifacts.jfrog.io/artifactory/api/helm/rds-hlm
+        default: https://niartifacts.jfrog.io/artifactory/rds-hlm
         type: string
       repository_user:
         description: The user to connect to the helm repository
@@ -38,9 +38,6 @@ on:
     secrets:
       GPG_PRIVATE_KEY:
         description: Base 64 encoded gpg private key to use for signing
-        required: true
-      GPG_PUBLIC_KEY:
-        description: Base 64 encoded gpg public key to use for signing
         required: true
       REPOSITORY_PASSWORD:
         description: The password to connect to the helm repository
@@ -60,10 +57,6 @@ jobs:
         run: pipx install 'helm-sign==0.1.2'
       - name: Create gnupghome directory
         run: mkdir ${{ runner.temp }}/gpg && chmod 700 ${{ runner.temp }}/gpg
-      - name: Import public key
-        run: echo "${{ secrets.GPG_PUBLIC_KEY }}" | base64 --decode | gpg --import
-        env:
-          GNUPGHOME: ${{ runner.temp }}/gpg
       - name: Import private key
         run: echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 --decode | gpg --import
         env:

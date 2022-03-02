@@ -40,9 +40,6 @@ on:
       GPG_PRIVATE_KEY:
         description: Base 64 encoded gpg private key to use for signing
         required: true
-      GPG_PUBLIC_KEY:
-        description: Base 64 encoded gpg public key to use for signing
-        required: true
       REGISTRY_PASSWORD:
         description: Password or token to use to pull from container registry
         required: true
@@ -61,10 +58,6 @@ jobs:
         run: mkdir ${{ runner.temp }}/sigstore
       - name: Create gnupghome directory
         run: mkdir ${{ runner.temp }}/gpg && chmod 700 ${{ runner.temp }}/gpg
-      - name: Import public key
-        run: echo "${{ secrets.GPG_PUBLIC_KEY }}" | base64 --decode | gpg --import
-        env:
-          GNUPGHOME: ${{ runner.temp }}/gpg
       - name: Import private key
         run: echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 --decode | gpg --import
         env:

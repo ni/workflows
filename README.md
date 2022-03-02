@@ -30,12 +30,11 @@ Secrets must be defined in the calling repository or organization and then provi
 | Name                  | Description                                                            |
 |-----------------------|------------------------------------------------------------------------|
 | `GPG_PRIVATE_KEY`     | A base64 encoded gpg private key to use for signing                    |
-| `GPG_PUBLIC_KEY`      | A base64 encoded gpg public key to use for signing                     |
 | `REPOSITORY_PASSWORD` | The password to use to connect to the helm repository                  |
 
 ### Usage
 
-First define the needed secrets `GPG_PRIVATE_KEY`, `GPG_PUBLIC_KEY`, and `REPOSITORY_PASSWORD` in
+First define the needed secrets `GPG_PRIVATE_KEY` and `REPOSITORY_PASSWORD` in
 the repo or organization of the workflow caller. The calling workflow should look something like:
 
 ```yaml
@@ -63,7 +62,6 @@ jobs:
       version: '0.1.${{ github.run_id }}'
     secrets:
       GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-      GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
       REPOSITORY_PASSWORD: ${{ secrets.REPOSITORY_PASSWORD }
 ```
 
@@ -96,14 +94,13 @@ Secrets must be defined in the calling repository or organization and then provi
 | `AWS_ACCESS_KEY_ID`   | The AWS access key id to connect to the s3 bucket                      |
 | `AWS_SECRET_ACCESS_KEY` | The AWS secret access key to connect to the s3 bucket                |
 | `GPG_PRIVATE_KEY`     | A base64 encoded gpg private key to use for signing                    |
-| `GPG_PUBLIC_KEY`      | A base64 encoded gpg public key to use for signing                     |
 | `REGISTRY_PASSWORD`   | The password to connect to the container registry                      |
 
 ### Usage
 
-First define the needed secrets `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY``GPG_PRIVATE_KEY`, 
-`GPG_PUBLIC_KEY`, and `REGISTRY_PASSWORD` in the repo or organization of the workflow caller. The
-calling workflow should look something like:
+First define the needed secrets `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `GPG_PRIVATE_KEY`, 
+and `REGISTRY_PASSWORD` in the repo or organization of the workflow caller. The calling workflow
+should look something like:
 
 ```yaml
 on:
