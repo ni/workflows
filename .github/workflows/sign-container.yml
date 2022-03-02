@@ -69,6 +69,10 @@ jobs:
         run: echo "${{ secrets.GPG_PRIVATE_KEY }} | base64 --decode | gpg --import"
         env:
           GNUPGHOME: ${{ runner.temp }}/gpg
+      - name: List keys
+        run: gpg --list-secret-keys
+        env:
+          GNUPGHOME: ${{ runner.temp }}/gpg
       - name: Sign image
         run: podman image sign --sign-by ${{ inputs.gpg_key_id }} -d ${{ runner.temp }}/sigstore docker://${{ inputs.image_tag }}
         env:
