@@ -7,6 +7,11 @@ on:
         description: Name of the helm chart to sign
         required: true
         type: string
+      gpg_key_id:
+        description: ID for the key to be used for signing
+        required: false
+        type: string
+        default: security@ni.com
       repository_name:
         description: The name of the helm repository
         required: false
@@ -64,7 +69,7 @@ jobs:
         env:
           GNUPGHOME: ${{ runner.temp }}/gpg
       - name: Sign chart
-        run: helm-sign ${{ inputs.chart }}-${{ inputs.version }}.tgz
+        run: helm-sign --key ${{ inputs.gpg_key_id }} ${{ inputs.chart }}-${{ inputs.version }}.tgz
         env:
           GNUPGHOME: ${{ runner.temp }}/gpg
       - name: Publish providence file
