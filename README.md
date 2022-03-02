@@ -62,7 +62,7 @@ jobs:
       version: '0.1.${{ github.run_id }}'
     secrets:
       GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-      REPOSITORY_PASSWORD: ${{ secrets.REPOSITORY_PASSWORD }
+      REPOSITORY_PASSWORD: ${{ secrets.REPOSITORY_PASSWORD }}
 ```
 
 ## `sign-container`
