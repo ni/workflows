@@ -1,0 +1,69 @@
+name: sign-chart
+
+on:
+  workflow_call:
+    inputs:
+      chart:
+        description: Name of the helm chart to sign
+        required: true
+        type: string
+      gpg_key_id:
+        description: ID for the key to be used for signing
+        required: false
+        type: string
+        default: security@ni.com
+      repository_name:
+        description: The name of the helm repository
+        required: false
+        default: rds-hlm
+        type: string
+      repository_path:
+        description: The path of the chart within the repository
+        required: false
+        default: '/'
+        type: string
+      repository_url:
+        description: URL for the helm repository 
+        required: false
+        default: https://niartifacts.jfrog.io/artifactory/rds-hlm
+        type: string
+      repository_user:
+        description: The user to connect to the helm repository
+        required: true
+        type: string
+      version:
+        description: Version of the helm chart to sign
+        required: true
+        type: string
+    secrets:
+      GPG_PRIVATE_KEY:
+        description: Base 64 encoded gpg private key to use for signing
+        required: true
+      REPOSITORY_PASSWORD:
+        description: The password to connect to the helm repository
+        required: true
+
+jobs:
+  sign-chart:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sign into helm
+        run: helm repo add ${{ inputs.repository_name }} ${{ inputs.repository_url }} --username ${{ inputs.repository_user }} --password ${{ secrets.REPOSITORY_PASSWORD }}
+      - name: Update helm repo
+        run: helm repo update
+      - name: Download chart
+        run: helm pull ${{ inputs.repository_name }}/${{ inputs.chart }} --version ${{ inputs.version }}
+      - name: Install helm-sign
+        run: pipx install 'helm-sign==0.1.2'
+      - name: Create gnupghome directory
+        run: mkdir ${{ runner.temp }}/gpg && chmod 700 ${{ runner.temp }}/gpg
+      - name: Import private key
+        run: echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 --decode | gpg --import
+        env:
+          GNUPGHOME: ${{ runner.temp }}/gpg
+      - name: Sign chart
+        run: helm-sign --key ${{ inputs.gpg_key_id }} ${{ inputs.chart }}-${{ inputs.version }}.tgz
+        env:
+          GNUPGHOME: ${{ runner.temp }}/gpg
+      - name: Publish providence file
+        run: curl -H "X-JFrog-Art-Api:${{ secrets.REPOSITORY_PASSWORD }}" -T test-chart-${{ inputs.version }}.tgz.prov "${{ inputs.repository_url }}${{ inputs.repository_path }}${{ inputs.chart }}-${{ inputs.version }}.tgz.prov"
