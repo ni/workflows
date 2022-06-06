@@ -27,10 +27,6 @@ on:
         required: false
         default: https://niartifacts.jfrog.io/artifactory/rds-hlm
         type: string
-      repository_user:
-        description: The user to connect to the helm repository
-        required: true
-        type: string
       version:
         description: Version of the helm chart to sign
         required: true
@@ -38,6 +34,9 @@ on:
     secrets:
       GPG_PRIVATE_KEY:
         description: Base 64 encoded gpg private key to use for signing
+        required: true
+      REPOSITORY_USERNAME:
+        description: The username to connect to the helm repository
         required: true
       REPOSITORY_PASSWORD:
         description: The password to connect to the helm repository
@@ -48,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Sign into helm
-        run: helm repo add ${{ inputs.repository_name }} ${{ inputs.repository_url }} --username ${{ inputs.repository_user }} --password ${{ secrets.REPOSITORY_PASSWORD }}
+        run: helm repo add ${{ inputs.repository_name }} ${{ inputs.repository_url }} --username ${{ secrets.REPOSITORY_USERNAME }} --password ${{ secrets.REPOSITORY_PASSWORD }}
       - name: Update helm repo
         run: helm repo update
       - name: Download chart

@@ -17,10 +17,6 @@ on:
         required: false
         default: niartifacts.jfrog.io
         type: string
-      registry_username:
-        description: User to connect to artifactory
-        required: true
-        type: string
       signature_store_bucket:
         description: AWS S3 bucket to hold signatures
         required: true
@@ -40,6 +36,9 @@ on:
       GPG_PRIVATE_KEY:
         description: Base 64 encoded gpg private key to use for signing
         required: true
+      REGISTRY_USERNAME:
+        description: Username to use to pull from container registry
+        required: true
       REGISTRY_PASSWORD:
         description: Password or token to use to pull from container registry
         required: true
@@ -51,7 +50,7 @@ jobs:
       - name: Log into registry
         uses: redhat-actions/podman-login@v1
         with:
-          username: ${{ inputs.registry_username }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
           registry: ${{ inputs.registry }}
       - name: Create signature staging directory
