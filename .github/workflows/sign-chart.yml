@@ -65,4 +65,4 @@ jobs:
         env:
           GNUPGHOME: ${{ runner.temp }}/gpg
       - name: Publish providence file
-        run: curl -H "X-JFrog-Art-Api:${{ secrets.REPOSITORY_PASSWORD }}" -T test-chart-${{ inputs.version }}.tgz.prov "${{ inputs.repository_url }}${{ inputs.repository_path }}${{ inputs.chart }}-${{ inputs.version }}.tgz.prov"
+        run: curl -H "X-JFrog-Art-Api:${{ secrets.REPOSITORY_PASSWORD }}" -T ${{ inputs.chart }}-${{ inputs.version }}.tgz.prov "${{ inputs.repository_url }}${{ inputs.repository_path }}${{ inputs.chart }}-${{ inputs.version }}.tgz.prov"
