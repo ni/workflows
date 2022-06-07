@@ -21,7 +21,6 @@ The reusable workflow is located at: `.github/workflows/sign-chart.yml`.
 | `repository_name`   | The name of the helm repository (e.g. `rds-helm`)                        |
 | `repository_path` (Optional) | The path within the repository where the chart is stored, defaults to `/` |
 | `repository_url` (Optional) | The URL to the helm repository, defaults to `https://niartifacts.jfrog.io/artifactory/api/helm/rds-hlm` |
-| `repository_user`   | The user to connect to the helm repository                               |
 | `version`           | The version of the helm chart to sign                                    |
 
 ### Secrets
@@ -30,11 +29,12 @@ Secrets must be defined in the calling repository or organization and then provi
 | Name                  | Description                                                            |
 |-----------------------|------------------------------------------------------------------------|
 | `GPG_PRIVATE_KEY`     | A base64 encoded gpg private key to use for signing                    |
-| `REPOSITORY_PASSWORD` | The password to use to connect to the helm repository                  |
+| `REPOSITORY_TOKEN`    | The token to use to connect to the helm repository                     |
+| `REPOSITORY_USER`     | The user to connect to the helm repository                             |
 
 ### Usage
 
-First define the needed secrets `GPG_PRIVATE_KEY` and `REPOSITORY_PASSWORD` in
+First define the needed secrets `GPG_PRIVATE_KEY`, `REPOSITORY_USER`, and `REPOSITORY_TOKEN` in
 the repo or organization of the workflow caller. The calling workflow should look something like:
 
 ```yaml
@@ -49,7 +49,7 @@ jobs:
       - name: Build chart package
         run: helm package test-chart --destination ${{ runner.temp }} --version '0.1.${{ github.run_id }}'
       - name: Publish chart
-        run: curl -H "X-JFrog-Art-Api:${{ secrets.REPOSITORY_PASSWORD }}" -T ${{ runner.temp }}/test-chart-0.1.${{ github.run_id }}.tgz "https://niartifacts.jfrog.io/artifactory/rds-hlm/ni/test-chart/test-chart-0.1.${{ github.run_id }}.tgz"
+        run: 'curl -H "Authentication: Bearer ${{ secrets.REPOSITORY_TOKEN }}" -T ${{ runner.temp }}/test-chart-0.1.${{ github.run_id }}.tgz "https://niartifacts.jfrog.io/artifactory/rds-hlm/ni/test-chart/test-chart-0.1.${{ github.run_id }}.tgz"'
 
   sign-chart:
     uses: ni/workflows/.github/workflows/sign-chart.yml@main
@@ -58,11 +58,11 @@ jobs:
       chart: test-chart
       repository_name: rds-hlm
       repository_path: /ni/test-chart/
-      repository_user: neil.stoddard@ni.com
       version: '0.1.${{ github.run_id }}'
     secrets:
       GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-      REPOSITORY_PASSWORD: ${{ secrets.REPOSITORY_PASSWORD }}
+      REPOSITORY_USER: ${{ secrets.REPOSITORY_USER }}
+      REPOSITORY_TOKEN: ${{ secrets.REPOSITORY_TOKEN }}
 ```
 
 ## `sign-container`
