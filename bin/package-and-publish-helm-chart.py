@@ -5,7 +5,6 @@ import subprocess
 import sys
 
 from packaging.version import Version
-from shutil import copyfile
 
 
 def get_chart_attribute(chart_filepath, attribute_name, default_value):
