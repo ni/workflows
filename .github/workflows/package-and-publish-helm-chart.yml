@@ -47,6 +47,8 @@ jobs:
       with:
         repository: ni/workflows
         path: ni/workflows
+    - name: Add 'bitnami' helm repo
+      run: helm repo add bitnami https://charts.bitnami.com/bitnami
     - name: Download helm dependencies
       run: helm dependency build ${{ inputs.helm_chart_directory }}
     - name: Lint Helm chart
