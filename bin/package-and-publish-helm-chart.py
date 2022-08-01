@@ -30,7 +30,7 @@ def main():
   print(f'application_version = {application_version}')
 
   username = os.getenv('ARTIFACTORY_USER')
-  token = os.getenv('ARTIFACTORY_PASSWORD')
+  token = os.getenv('ARTIFACTORY_TOKEN')
 
   # Parse chart name from the Chart.yaml file
   chart_name = get_chart_attribute(chart_filepath, 'name', None)
