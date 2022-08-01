@@ -122,7 +122,7 @@ def main():
   # Publish the Helm chart package
   with open(helm_package_filepath, 'rb') as f:
     data = f.read()
-    auth = (username, password)
+    auth = (username, token)
     response = requests.put(
       url='https://niartifacts.jfrog.io/artifactory/rnd-helm-ci/ni/systemlink/{chart_name}/{package_major}/{package_minor}/{helm_package}'.format(
         chart_name=chart_name,
