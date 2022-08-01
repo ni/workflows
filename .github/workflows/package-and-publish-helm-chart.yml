@@ -42,6 +42,11 @@ jobs:
       helm_package_minor_version: ${{ steps.package_helm_chart_step.outputs.helm_package_minor_version }}
     steps:
     - uses: actions/checkout@v2
+    - name: Checkout ni/workflows
+      uses: actions/checkout@v2
+      with:
+        repository: ni/workflows
+        path: ni/workflows
     - name: Download helm dependencies
       run: helm dependency build ${{ inputs.helm_chart_directory }}
     - name: Lint Helm chart
@@ -52,7 +57,7 @@ jobs:
         pip install packaging
     - name: Package and publish Helm chart
       id: package_helm_chart_step
-      run: python bin/package-and-publish-helm-chart.py 
+      run: python ni/workflows/bin/package-and-publish-helm-chart.py 
                   ${{ inputs.helm_chart_directory }}
                   ${{ runner.temp }}
                   ${{ github.run_number}}.${{ github.run_attempt}}

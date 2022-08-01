@@ -30,7 +30,7 @@ def main():
   print(f'application_version = {application_version}')
 
   username = os.getenv('ARTIFACTORY_USER')
-  token = os.getenv('ARTIFACTORY_PASSWORD')
+  token = os.getenv('ARTIFACTORY_TOKEN')
 
   # Parse chart name from the Chart.yaml file
   chart_name = get_chart_attribute(chart_filepath, 'name', None)
@@ -122,7 +122,7 @@ def main():
   # Publish the Helm chart package
   with open(helm_package_filepath, 'rb') as f:
     data = f.read()
-    auth = (username, password)
+    auth = (username, token)
     response = requests.put(
       url='https://niartifacts.jfrog.io/artifactory/rnd-helm-ci/ni/systemlink/{chart_name}/{package_major}/{package_minor}/{helm_package}'.format(
         chart_name=chart_name,
