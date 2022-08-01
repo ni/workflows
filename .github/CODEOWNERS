@@ -1,1 +1,3 @@
 * @irwand @neilvana
+.github/workflows/package-and-publish-helm-chart.yml @lnowotny @BKnight760
+bin/package-and-publish-helm-chart.py @lnowotny @BKnight760
