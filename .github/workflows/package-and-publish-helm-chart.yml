@@ -63,7 +63,7 @@ jobs:
                   ${{ inputs.helm_chart_directory }}
                   ${{ runner.temp }}
                   ${{ github.run_number}}.${{ github.run_attempt}}
-                  ${{ github.ref != 'refs/heads/master' }}
+                  ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' }}
                   ${{ github.sha }}.${{ github.run_attempt }}
     - name: Upload build artifact - ${{ inputs.helm_package_build_artifact_name }}
       uses: actions/upload-artifact@v3
