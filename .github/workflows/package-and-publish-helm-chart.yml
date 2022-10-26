@@ -49,6 +49,8 @@ jobs:
         path: ni/workflows
     - name: Add 'bitnami' helm repo
       run: helm repo add bitnami https://charts.bitnami.com/bitnami
+    - name: Add 'ni-helm' helm repo
+      run: helm repo add ni-helm https://niartifacts.jfrog.io/artifactory/rnd-helm-ci --force-update --username $ARTIFACTORY_USER --password $ARTIFACTORY_TOKEN
     - name: Download helm dependencies
       run: helm dependency build ${{ inputs.helm_chart_directory }}
     - name: Lint Helm chart
