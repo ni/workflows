@@ -3,6 +3,55 @@ Reusable GitHub Actions workflows
 
 ## Available workflows
 
+## package-and-publish-helm-chart
+
+The `package-and-publish-helm-chart` reusable workflow is used to package, version, and publish Helm charts to an Artifactory repository. The workflow automatically manages chart versioning by checking existing versions in the repository and incrementing appropriately. It supports both release and pre-release builds with different versioning strategies.
+
+The reusable workflow is located at: `.github/workflows/package-and-publish-helm-chart.yml`.
+
+### Inputs
+
+| Name                               | Description                                                              |
+|------------------------------------|--------------------------------------------------------------------------|
+| `helm_chart_directory`             | The directory path containing the Helm chart to be packaged             |
+| `helm_package_build_artifact_name` | The name to use for the build artifact containing the packaged chart    |
+
+### Secrets
+Secrets must be defined in the calling repository or organization and then provided to this reusable workflow.
+
+| Name                  | Description                                                            |
+|-----------------------|------------------------------------------------------------------------|
+| `artifactory_user`    | The username to connect to the Artifactory repository                 |
+| `artifactory_token`   | The token/password to connect to the Artifactory repository           |
+
+### Outputs
+
+| Name                          | Description                                                        |
+|-------------------------------|--------------------------------------------------------------------|
+| `helm_package_filename`       | The filename of the packaged Helm chart                           |
+| `helm_package_major_version`  | The major version of the packaged Helm chart                      |
+| `helm_package_minor_version`  | The minor version of the packaged Helm chart                      |
+| `helm_package_version`        | The full version of the packaged Helm chart                       |
+
+### Usage
+
+First define the needed secrets `artifactory_user` and `artifactory_token` in the repo or organization of the workflow caller. The calling workflow should look something like:
+
+```yaml
+on:
+  push:
+
+jobs:
+  package-and-publish-helm-chart:
+    uses: ni/workflows/.github/workflows/package-and-publish-helm-chart.yml@main
+    with:
+      helm_chart_directory: ./my-helm-chart
+      helm_package_build_artifact_name: my-chart-package
+    secrets:
+      artifactory_user: ${{ secrets.ARTIFACTORY_USER }}
+      artifactory_token: ${{ secrets.ARTIFACTORY_TOKEN }}
+```
+
 ## sign-chart
 
 The `sign-chart` reusable workflow is used to sign a helm chart and publish the signature to the
